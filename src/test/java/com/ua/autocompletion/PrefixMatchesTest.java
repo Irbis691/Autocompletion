@@ -1,46 +1,55 @@
 package com.ua.autocompletion;
 
-import static org.junit.Assert.*;
-import org.junit.Before;
 import static org.mockito.Mockito.*;
 
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 /**
  *
  * @author Irbis
  */
 
-
+@RunWith(MockitoJUnitRunner.class)
 public class PrefixMatchesTest {
     
-    PrefixMatches example;
+    @Mock
     Trie trie;
     
-    @Before 
-    public void setUp() {
-        trie = Mockito.mock(Trie.class);
-        example = new PrefixMatches(trie);
-        MockitoAnnotations.initMocks(this);
-    }
-            
+    @InjectMocks
+    PrefixMatches example;    
+    
     @Test
-    public void testContains() {                
-        when(trie.contains("test")).thenReturn(true);        
-        
+    public void testContains_Verify() {
+        example.contains("qwe");
+        verify(trie).contains("qwe");
     }
     
     @Test
-    public void testDelete() {                
-        when(trie.delete("test")).thenReturn(true);        
-        
+    public void testDelete_Verify() {                
+        example.delete("qwe");
+        verify(trie).delete("qwe");
     }
     
     @Test
-    public void testSize() {                
-        when(trie.size()).thenReturn(1);        
-        
+    public void testSize_Verify() {        
+        example.size();
+        verify(trie).size();
     }
+    
+    @Test
+    public void testWordWithPrefix_Verify() {
+        example.wordsWithPrefix("qwe");
+        verify(trie).wordsWithPrefix("qwe");
+    }
+    
+//    @Test
+//    public void testAdd_Verify() {
+//        String word = "qwe";
+//        example.add(word);
+//        verify(trie).add(new Tuple(word, word.length()));
+//    }
 }

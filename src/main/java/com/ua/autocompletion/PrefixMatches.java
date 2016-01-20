@@ -3,6 +3,8 @@ package com.ua.autocompletion;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -26,15 +28,21 @@ public class PrefixMatches {
     // В словарь должны добавляться слова длиннее 2х символов. Предполагается что знаки пунктуации отсутствуют.
     public int add(String... strings) {
         int wordCount = trie.size();
+        Pattern p = Pattern.compile("\\s+");
         for (String str : strings) {
-            String trim = str.trim();
-            if (trim.contains(" ")) {
-                String[] subWords = trim.split(" ");
+            String trim = str.trim();            
+            Matcher m = p.matcher(trim);
+            if (m.matches()) {
+                String[] subWords = trim.split(p.pattern());
                 for (String newStr : subWords) {
-                    addToTrie(newStr);                    
+                    if(newStr.length() > 2) {
+                        addToTrie(newStr);
+                    }                                 
                 }
             }
-            addToTrie(str);
+            if(trim.length() > 2) {
+                addToTrie(str);
+            }
         }
         return trie.size() - wordCount;
     }
@@ -91,10 +99,7 @@ public class PrefixMatches {
     }
 
     // если введенный pref длиннее или равен 2м символам, то возвращает набор слов k=3 разных длин начиная с минимальной, и начинающихся с данного префикса pref.
-    public Iterable<String> wordsWithPrefix(String pref) {
-        if (prefToSmall(pref)) {
-            return Collections.EMPTY_LIST;
-        }
+    public Iterable<String> wordsWithPrefix(String pref) {        
         return wordsWithPrefix(pref, 3);
     }
 

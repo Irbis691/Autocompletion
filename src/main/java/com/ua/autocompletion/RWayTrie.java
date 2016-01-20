@@ -11,9 +11,10 @@ import java.util.Queue;
  */
 public class RWayTrie<T> implements Trie<T> {
 
-    // extended ASCII
+    // Size of english alphabet
     private static final int ALPHABET_SIZE = 26;
     
+    // First letter of english alphabet
     private static final char ALPHABET_START = 'a';
 
     // root of trie
@@ -24,9 +25,10 @@ public class RWayTrie<T> implements Trie<T> {
 
     // R-way trie node
     private static class Node {
-
+        //Node value
         private Object val;
-        private Node[] next = new Node[ALPHABET_SIZE];
+        //Array of node's links
+        private final Node[] next = new Node[ALPHABET_SIZE];
     }
 
     /**
@@ -100,7 +102,7 @@ public class RWayTrie<T> implements Trie<T> {
     }
 
     private Node get(Node x, String word, int d) {
-        if (x == null) {
+        if (x == null || word == null) {
             return null;
         }
         if (d == word.length()) {
@@ -114,11 +116,13 @@ public class RWayTrie<T> implements Trie<T> {
      * Removes the key from the set if the key is present.
      *
      * @param key the key
-     * @return true
-     * @throws NullPointerException if <tt>key</tt> is <tt>null</tt>
+     * @return true     
      */
     @Override
     public boolean delete(String key) {
+        if(key == null) {
+            return false;
+        }
         root = delete(root, key, 0);
         return root != null;
     }
