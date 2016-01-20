@@ -1,4 +1,4 @@
-package com.ua.epam.autocompletion;
+package com.ua.autocompletion;
 
 import java.util.ArrayList;
 import java.util.Collections;

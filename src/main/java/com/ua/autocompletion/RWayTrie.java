@@ -1,4 +1,4 @@
-package com.ua.epam.autocompletion;
+package com.ua.autocompletion;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -12,7 +12,9 @@ import java.util.Queue;
 public class RWayTrie<T> implements Trie<T> {
 
     // extended ASCII
-    private static final int R = 26;
+    private static final int ALPHABET_SIZE = 26;
+    
+    private static final char ALPHABET_START = 'a';
 
     // root of trie
     private Node root;
@@ -24,7 +26,7 @@ public class RWayTrie<T> implements Trie<T> {
     private static class Node {
 
         private Object val;
-        private Node[] next = new Node[R];
+        private Node[] next = new Node[ALPHABET_SIZE];
     }
 
     /**
@@ -45,8 +47,7 @@ public class RWayTrie<T> implements Trie<T> {
     @Override
     public void add(Tuple tuple) {
         if (tuple == null) {
-            System.out.println("Create tuple with word / word length and pass "
-                    + "it to method");
+            return;
         }
         if (tuple.getWord() == null) {
             delete(tuple.getWord());
@@ -66,7 +67,7 @@ public class RWayTrie<T> implements Trie<T> {
             x.val = val;
             return x;
         }
-        char c = (char) (key.charAt(d) - 'a');
+        char c = (char) (key.charAt(d) - ALPHABET_START);
         x.next[c] = add(x.next[c], key, val, d + 1);
         return x;
     }
@@ -105,7 +106,7 @@ public class RWayTrie<T> implements Trie<T> {
         if (d == word.length()) {
             return x;
         }
-        char c = (char) (word.charAt(d) - 'a');
+        char c = (char) (word.charAt(d) - ALPHABET_START);
         return get(x.next[c], word, d + 1);
     }
 
@@ -132,7 +133,7 @@ public class RWayTrie<T> implements Trie<T> {
             }
             x.val = null;
         } else {
-            char c = (char) (key.charAt(d) - 'a');
+            char c = (char) (key.charAt(d) - ALPHABET_START);
             x.next[c] = delete(x.next[c], key, d + 1);
         }
 
@@ -140,7 +141,7 @@ public class RWayTrie<T> implements Trie<T> {
         if (x.val != null) {
             return x;
         }
-        for (int c = 0; c < R; c++) {
+        for (int c = 0; c < ALPHABET_SIZE; c++) {
             if (x.next[c] != null) {
                 return x;
             }
@@ -189,10 +190,10 @@ public class RWayTrie<T> implements Trie<T> {
                     return "No words with such prefix";
                 }
                 StringBuilder str = new StringBuilder(t.getWord());
-                for(char c = 0; c < R; c++) {
+                for(char c = 0; c < ALPHABET_SIZE; c++) {
                     Node n = current.next[c];
                     if(n != null) {
-                        queue.add(new Tuple(str.append((char)(c + 'a')).toString(), n));
+                        queue.add(new Tuple(str.append((char)(c + ALPHABET_START)).toString(), n));
                         str.deleteCharAt(str.length() - 1);
                     }
                 }
