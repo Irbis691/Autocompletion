@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.ua.autocompletion;
 
 import java.io.BufferedReader;
@@ -42,20 +37,50 @@ public class TrieTest {
     }
     
     @Test
-    public void testAdd_IsAddAddedWord() {
+    public void testContains_IsContainsWorkCorrect() {
         trie.add(new Tuple(test[0], test[0].length()));
         assertTrue(trie.contains(test[0]));
     }
     
     @Test
-    public void testAdd_IsAddIncrementSize() {
+    public void testSize_IsSizeWorkCorrect() {        
         trie.add(new Tuple(test[0], test[0].length()));
         assertEquals(trie.size(), 1);
     }
     
     @Test
-    public void testAdd_IsAddNullDoNotIncrementSize() {
-        trie.add(null);
-        assertEquals(trie.size(), 0);
+    public void testAdd_IsAddIncrementSize() {
+        trie.add(new Tuple(test[0], test[0].length()));
+        trie.add(new Tuple(test[1], test[1].length()));
+        assertEquals(trie.size(), 2);
     }
+    
+    @Test
+    public void testAdd_IsAddExistingValueNotIncrementSize() {
+        trie.add(new Tuple(test[0], test[0].length()));
+        trie.add(new Tuple(test[0], test[0].length()));
+        assertEquals(trie.size(), 1);
+    }    
+    
+    @Test
+    public void testAdd_IsAddNullDoNotChangeSize() {
+        trie.add(new Tuple(test[0], test[0].length()));
+        trie.add(null);
+        assertEquals(trie.size(), 1);
+    }
+    
+    @Test
+    public void testDelete_IsDeleteWorkCorrect() {
+        trie.add(new Tuple(test[50], test[50].length()));
+        trie.delete(test[50]);
+        assertFalse(trie.contains(test[50]));
+    }
+    
+    @Test
+    public void testDelete_IsDeleteDecrementSize() {
+        trie.add(new Tuple(test[50], test[50].length()));
+        trie.delete(test[50]);
+        assertFalse(trie.contains(test[50]));
+    }    
+        
 }
