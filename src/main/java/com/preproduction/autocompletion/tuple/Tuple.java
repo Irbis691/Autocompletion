@@ -3,15 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.ua.autocompletion;
+package com.preproduction.autocompletion.tuple;
 
 /**
  *
  * @author Irbis
  */
 public class Tuple<T> {
-    T value;
-    String word;
+    private T value;
+    private String word;
 
     public Tuple(String word, T weight) {
         this.value = weight;
@@ -32,6 +32,5 @@ public class Tuple<T> {
 
     public void setWord(String word) {
         this.word = word;
-    }
-    
+    }    
 }

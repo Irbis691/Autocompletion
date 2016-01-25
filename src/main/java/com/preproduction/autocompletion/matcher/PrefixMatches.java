@@ -1,10 +1,10 @@
-package com.ua.autocompletion;
+package com.preproduction.autocompletion.matcher;
 
-import java.util.ArrayList;
+import com.preproduction.autocompletion.tuple.Tuple;
+import com.preproduction.autocompletion.trie.Trie;
 import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  *
@@ -28,28 +28,16 @@ public class PrefixMatches {
     // В словарь должны добавляться слова длиннее 2х символов. Предполагается что знаки пунктуации отсутствуют.
     public int add(String... strings) {
         int wordCount = trie.size();
-        Pattern p = Pattern.compile("\\s+");
         for (String str : strings) {
-            String trim = str.trim();            
-            Matcher m = p.matcher(trim);
-            if (m.matches()) {
-                String[] subWords = trim.split(p.pattern());
-                for (String newStr : subWords) {
-                    if(newStr.length() > 2) {
-                        addToTrie(newStr);
-                    }                                 
+            str = str.trim();
+            String[] subWords = str.split("\\s+");
+            for (String newStr : subWords) {
+                if (newStr.length() > 2 && !trie.contains(newStr)) {                    
+                    trie.add(new Tuple<>(newStr, newStr.length()));
                 }
-            }
-            if(trim.length() > 2) {
-                addToTrie(str);
             }
         }
         return trie.size() - wordCount;
-    }
-
-    private void addToTrie(String newStr) {
-        Tuple<Integer> tuple = new Tuple<>(newStr, newStr.length());
-        trie.add(tuple);
     }
 
     // есть ли слово в словаре
@@ -82,24 +70,33 @@ public class PrefixMatches {
         if (prefToSmall(pref)) {
             return Collections.EMPTY_LIST;
         }
-        List<String> result = new ArrayList<>();
-        Iterable<String> iter = trie.wordsWithPrefix(pref);
-        int currLength = 0;
-        int counter = 0;
-        for (String str : iter) {
-            if (counter < k) {
+        return () -> new Iterator<String>() {
+            int currLength = 0;
+            int counter = 0;
+            Iterator<String> iter = trie.wordsWithPrefix(pref).iterator();
+
+            @Override
+            public boolean hasNext() {
+                return iter.hasNext() && counter <= k;
+            }
+
+            @Override
+            public String next() {
+                String str = (String) iter.next();
                 if (currLength != str.length()) {
                     currLength = str.length();
                     counter++;
                 }
-                result.add(str);
+                while (iter.hasNext() && counter <= k) {
+                    return str;
+                }
+                throw new NoSuchElementException();
             }
-        }
-        return result;
+        };
     }
 
-    // если введенный pref длиннее или равен 2м символам, то возвращает набор слов k=3 разных длин начиная с минимальной, и начинающихся с данного префикса pref.
-    public Iterable<String> wordsWithPrefix(String pref) {        
+// если введенный pref длиннее или равен 2м символам, то возвращает набор слов k=3 разных длин начиная с минимальной, и начинающихся с данного префикса pref.
+    public Iterable<String> wordsWithPrefix(String pref) {
         return wordsWithPrefix(pref, 3);
     }
 

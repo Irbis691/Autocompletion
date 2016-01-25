@@ -1,7 +1,9 @@
-package com.ua.autocompletion;
+package com.preproduction.autocompletion.trie;
 
+import com.preproduction.autocompletion.tuple.Tuple;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
@@ -13,7 +15,7 @@ public class RWayTrie<T> implements Trie<T> {
 
     // Size of english alphabet
     private static final int ALPHABET_SIZE = 26;
-    
+
     // First letter of english alphabet
     private static final char ALPHABET_START = 'a';
 
@@ -25,6 +27,7 @@ public class RWayTrie<T> implements Trie<T> {
 
     // R-way trie node
     private static class Node {
+
         //Node value
         private Object val;
         //Array of node's links
@@ -116,11 +119,11 @@ public class RWayTrie<T> implements Trie<T> {
      * Removes the key from the set if the key is present.
      *
      * @param key the key
-     * @return true     
+     * @return true
      */
     @Override
     public boolean delete(String key) {
-        if(key == null) {
+        if (key == null) {
             return false;
         }
         root = delete(root, key, 0);
@@ -172,40 +175,41 @@ public class RWayTrie<T> implements Trie<T> {
      * @return iterator for trie that made BFS
      */
     @Override
-    public Iterable<String> wordsWithPrefix(String pref) {        
+    public Iterable<String> wordsWithPrefix(String pref) {
         return () -> new Iterator<String>() {
-            Node current = get(root, pref, 0);
-            Queue<Tuple> queue = new LinkedList<Tuple>() {
+            private Node current = get(root, pref, 0);
+            private Queue<Tuple> queue = new LinkedList<Tuple>() {
                 {
-                    add(new Tuple<>(pref, current));
+                    if(current != null) {
+                        add(new Tuple<>(pref, current));
+                    }
                 }
             };
-            
+
             @Override
             public boolean hasNext() {
                 return !queue.isEmpty();
             }
-            
+
             @Override
             public String next() {
-                Tuple t = queue.poll();
-                current = (Node) t.getValue();
-                if(current == null) {
-                    return "No words with such prefix";
-                }
-                StringBuilder str = new StringBuilder(t.getWord());
-                for(char c = 0; c < ALPHABET_SIZE; c++) {
-                    Node n = current.next[c];
-                    if(n != null) {
-                        queue.add(new Tuple(str.append((char)(c + ALPHABET_START)).toString(), n));
-                        str.deleteCharAt(str.length() - 1);
+                while (!queue.isEmpty()) {
+                    Tuple t = queue.poll();
+                    current = (Node) t.getValue();                    
+                    StringBuilder str = new StringBuilder(t.getWord());
+                    for (char c = 0; c < ALPHABET_SIZE; c++) {
+                        Node n = current.next[c];
+                        if (n != null) {
+                            queue.add(new Tuple(str.append((char) (c + ALPHABET_START)).toString(), n));
+                            str.deleteCharAt(str.length() - 1);
+                        }
+                    }
+                    if (current.val != null) {
+                        return str.toString();
                     }
                 }
-                if(current.val != null) {
-                    return str.toString();
-                }
-                return next();
-            }
+                throw new NoSuchElementException();
+            }            
         };
     }
 
